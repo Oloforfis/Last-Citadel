@@ -1,0 +1,81 @@
+[2026-10-01T08:57:44.981Z][INFO] Command-line: 'C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.3f1\\Editor\\Data\\Resources\\PackageManager\\Server\\UnityPackageManager.exe' server -s 19364 --ipc-path Unity-Upm-19364 -l 2 --log-file 'C:\\Last Citadel/Logs/upm.log'
+[2026-10-01T08:57:45.024Z][INFO] IPC server started (IPC path=Unity-Upm-19364).
+[2026-10-01T08:57:45.024Z][INFO] Hint: To connect to this UPM instance, launch Unity with the command-line parameter -upmIpcPath Upm-19364.
+[2026-10-01T08:57:53.750Z][INFO] project:list-packages <-- Request received
+params: {}
+[2026-10-01T08:57:53.810Z][INFO] config:project:get-registries <-- Request received
+params: {}
+[2026-10-01T08:57:53.829Z][INFO] config:project:get-registries --> 200 (19 ms)
+[2026-10-01T08:57:54.191Z][INFO] project:list-packages --> 200 (441 ms)
+[2026-10-01T08:57:56.541Z][INFO] project:list-packages <-- Request received
+params: {}
+[2026-10-01T08:57:56.630Z][INFO] project:list-packages --> 200 (89 ms)
+[2026-10-01T08:57:56.697Z][INFO] project:update-dependencies <-- Request received
+params: {}
+[2026-10-01T08:57:56.720Z][INFO] project:update-dependencies --> 200 (23 ms)
+[2026-10-01T08:57:56.752Z][INFO] project:resolve-packages <-- Request received
+params: {}
+[2026-10-01T08:58:22.068Z][WARN] Requested version [2.0.0] for package [com.unity.settings-manager] overridden by minimum version [2.1.1].
+[2026-10-01T08:58:22.069Z][INFO] project:resolve-packages --> 200 (25317 ms)
+[2026-10-01T08:59:05.323Z][INFO] project:list-packages <-- Request received
+params: {}
+[2026-10-01T08:59:05.469Z][INFO] project:list-packages <-- Request received
+params: {}
+[2026-10-01T08:59:05.661Z][INFO] project:list-packages --> 200 (338 ms)
+[2026-10-01T08:59:05.769Z][INFO] project:list-packages --> 200 (303 ms)
+[2026-10-01T08:59:05.955Z][INFO] project:list-packages <-- Request received
+params: {}
+[2026-10-01T08:59:06.063Z][INFO] config:project:get-registries <-- Request received
+params: {}
+[2026-10-01T08:59:06.087Z][INFO] config:project:get-registries --> 200 (24 ms)
+[2026-10-01T08:59:06.151Z][INFO] project:list-packages --> 200 (196 ms)
+[2026-10-01T08:59:15.795Z][INFO] project:list-packages <-- Request received
+params: {}
+[2026-10-01T08:59:15.895Z][INFO] project:list-packages --> 200 (100 ms)
+[2026-10-01T08:59:19.015Z][INFO] project:list-packages <-- Request received
+params: {}
+[2026-10-01T08:59:19.111Z][INFO] project:list-packages --> 200 (96 ms)
+[2026-10-01T08:59:19.574Z][INFO] packages:get-all-packageinfo <-- Request received
+params: {}
+[2026-10-01T08:59:19.592Z][INFO] packages:get-all-packageinfo <-- Request received
+params: {}
+[2026-10-01T08:59:20.172Z][INFO] project:list-packages <-- Request received
+params: {}
+[2026-10-01T08:59:25.121Z][INFO] project:list-packages --> 200 (4949 ms)
+[2026-10-01T08:59:31.460Z][INFO] packages:get-all-packageinfo --> 200 (11867 ms)
+[2026-10-01T08:59:31.701Z][INFO] packages:get-packageinfo <-- Request received
+params: {
+  "packageId": "com.unity.addressables@2.11.2"
+}
+[2026-10-01T08:59:31.712Z][INFO] packages:get-packageinfo <-- Request received
+params: {
+  "packageId": "com.unity.ads.ios-support@1.0.1"
+}
+[2026-10-01T08:59:31.729Z][INFO] packages:get-packageinfo <-- Request received
+params: {
+  "packageId": "com.unity.scriptablebuildpipeline@3.0.3"
+}
+[2026-10-01T08:59:31.742Z][INFO] packages:get-packageinfo <-- Request received
+params: {
+  "packageId": "com.unity.services.moderation@1.0.2"
+}
+[2026-10-01T08:59:31.794Z][INFO] packages:get-packageinfo --> 200 (52 ms)
+[2026-10-01T08:59:31.796Z][INFO] packages:get-packageinfo --> 200 (83 ms)
+[2026-10-01T08:59:31.798Z][INFO] packages:get-packageinfo --> 200 (69 ms)
+[2026-10-01T08:59:31.804Z][INFO] packages:get-packageinfo --> 200 (103 ms)
+[2026-10-01T08:59:32.209Z][INFO] packages:get-all-packageinfo --> 200 (12635 ms)
+[2026-10-01T08:59:32.336Z][INFO] packages:get-packageinfo <-- Request received
+params: {
+  "packageId": "com.unity.mobile.notifications@2.4.3"
+}
+[2026-10-01T08:59:32.350Z][INFO] packages:get-packageinfo <-- Request received
+params: {
+  "packageId": "com.unity.project-auditor-rules@1.0.3"
+}
+[2026-10-01T08:59:32.365Z][INFO] packages:get-packageinfo <-- Request received
+params: {
+  "packageId": "com.unity.services.friends@1.1.1"
+}
+[2026-10-01T08:59:32.396Z][INFO] packages:get-packageinfo --> 200 (60 ms)
+[2026-10-01T08:59:32.397Z][INFO] packages:get-packageinfo --> 200 (47 ms)
+[2026-10-01T08:59:32.398Z][INFO] packages:get-packageinfo --> 200 (33 ms)
