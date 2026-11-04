@@ -9,6 +9,9 @@ public class UnitMovement : MonoBehaviour
     [SerializeField] private float rotationSpeed = 20f;
     [SerializeField] private LayerMask groundLayer;
 
+    private float verticalVelocity = 0f;
+    [SerializeField] private float gravity = -20f;
+
     private CharacterController controller;
     private Vector3 targetPosition;
     private Camera mainCamera;
@@ -47,6 +50,16 @@ public class UnitMovement : MonoBehaviour
         HandleInput();
         Move();
         AlwaysLookAtMouse();
+        ApplyGravity();
+    }
+
+    void ApplyGravity()
+    {
+        if (controller.isGrounded && verticalVelocity < 0f)
+            verticalVelocity = -2f;
+
+        verticalVelocity += gravity * Time.deltaTime;
+        controller.Move(new Vector3(0f, verticalVelocity, 0f) * Time.deltaTime);
     }
 
     void HandleInput()
@@ -78,6 +91,8 @@ public class UnitMovement : MonoBehaviour
 
     void Move()
     {
+        if (PlayerActionState.BlockMovement) return;
+
         Vector2 inputVector = moveAction.ReadValue<Vector2>();
         Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y).normalized;
 
@@ -85,7 +100,7 @@ public class UnitMovement : MonoBehaviour
         if (moveDirection.magnitude >= 0.1f)
         {
             // Двигаем строго по вектору WASD (относительно мира)
-            controller.Move(moveDirection * speed * Time.deltaTime);
+            controller.Move(moveDirection * speed * PlayerActionState.SpeedMultiplier * Time.deltaTime);
             isMovingToClickPoint = false; // Прерываем путь к точке при ручном вводе
             return;
         }
@@ -97,7 +112,7 @@ public class UnitMovement : MonoBehaviour
 
             if (directionToTarget.magnitude > 0.1f)
             {
-                controller.Move(directionToTarget * speed * Time.deltaTime);
+                controller.Move(directionToTarget * speed * PlayerActionState.SpeedMultiplier * Time.deltaTime);
 
                 if (Vector3.Distance(transform.position, targetPosition) < 0.3f)
                 {
