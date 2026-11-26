@@ -1,180 +1,95 @@
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.InputSystem;
 
 public class CameraMover : MonoBehaviour
 {
-    [Header("Настройки скорости")]
-    [Tooltip("Скорость движения камеры")]
-    [SerializeField] private float moveSpeed = 1.0f;
+    [Header("Скорости")]
+    [SerializeField] private float keySpeed = 10f;        // юнитов в секунду (стрелки)
+    [SerializeField] private float edgeSpeed = 15f;       // юнитов в секунду (края экрана)
+    [SerializeField] private int edgePixels = 15;         // ширина зоны у края
 
-    [Tooltip("Скорость перетаскивания мышью")]
-    [SerializeField] private float moveDragSpeed = 0.02f;
+    private Transform tr;
+    private Camera cam;
+    private Vector2 lastMousePos;
+    private bool dragging;
+    private float fixedY;
 
-    [Header("Движение от края экрана")]
-    [Tooltip("Включить движение камеры при подведении курсора к краю экрана")]
-    [SerializeField] private bool enableEdgePanning = true;
-
-    [Tooltip("Ширина «активной зоны» у края экрана, в пикселях")]
-    [SerializeField] private int edgeZonePixels = 15;
-
-    [Tooltip("Множитель скорости при движении от края экрана")]
-    [SerializeField] private float edgePanSpeedMultiplier = 1.5f;
-
-    [Header("Движение зажатой средней кнопкой мыши")]
-    [Tooltip("Включить перетаскивание камеры зажатом колёсике мыши")]
-    [SerializeField] private bool enableMouseDragPanning = true;
-
-    [Header("Движение стрелками клавиатуры")]
-    [Tooltip("Включить движение камеры стрелками")]
-    [SerializeField] private bool enableArrowKeyPanning = true;
-
-    [Header("Ограничения")]
-    [Tooltip("Не выходить за край карты")]
-    [SerializeField] private bool clampToBounds = false;
-
-    [SerializeField] private Vector2 minBounds = new Vector2(-100f, -100f); // X, Y 
-    [SerializeField] private Vector2 maxBounds = new Vector2(100f, 100f);   // X, Y 
-
-    private Transform _cachedTransform;
-    private bool _isDragging;
-    private Vector3 _lastMouseScreenPosition;
-    private float _fixedZ;
-
-    private void Awake()
+    void Awake()
     {
-        _cachedTransform = transform;
+        tr = transform;
+        cam = GetComponent<Camera>();
+        fixedY = tr.position.y;
     }
 
-    private void LateUpdate()
+    void LateUpdate()
     {
-        Vector2 displacement = Vector2.zero;
+        Vector2 delta = ArrowDelta() + EdgeDelta() + DragDelta();
 
-        displacement += GetArrowKeyDelta();
-        displacement += GetEdgePanDelta();
-        displacement += GetMouseDragDelta();
-
-        if (displacement.sqrMagnitude > 0.0001f)
+        if (delta.sqrMagnitude > 0f)
         {
-            Vector3 position = _cachedTransform.position;
-            position.x += displacement.x;
-            position.y += displacement.y;
-            position.z = _fixedZ;
-
-            if (clampToBounds)
-            {
-                position = ClampToAllowedBounds(position);
-            }
-
-            _cachedTransform.position = position;
+            Vector3 pos = tr.position;
+            pos.x += delta.x;
+            pos.z += delta.y;
+            pos.y = fixedY;
+            tr.position = pos;
         }
     }
 
-    private Vector2 GetArrowKeyDelta()
+    // Стрелки
+    Vector2 ArrowDelta()
     {
-        if (!enableArrowKeyPanning)
-            return Vector2.zero;
+        float x = 0f, z = 0f;
+        if (Keyboard.current.leftArrowKey.isPressed) x -= 1f;
+        if (Keyboard.current.rightArrowKey.isPressed) x += 1f;
+        if (Keyboard.current.downArrowKey.isPressed) z -= 1f;
+        if (Keyboard.current.upArrowKey.isPressed) z += 1f;
 
-        float horizontal = 0f; // влево / вправо
-        float vertical = 0f;   // вниз / вверх
-
-        if (Input.GetKey(KeyCode.LeftArrow)) horizontal -= 1f;
-        if (Input.GetKey(KeyCode.RightArrow)) horizontal += 1f;
-        if (Input.GetKey(KeyCode.DownArrow)) vertical -= 1f;
-        if (Input.GetKey(KeyCode.UpArrow)) vertical += 1f;
-
-        Vector2 direction = new Vector2(horizontal, vertical).normalized;
-        return direction * (moveSpeed * Time.deltaTime);
+        return new Vector2(x, z).normalized * (keySpeed * Time.deltaTime);
     }
 
-    private Vector2 GetEdgePanDelta()
+    // Края экрана
+    Vector2 EdgeDelta()
     {
-        if (!enableEdgePanning || _isDragging)
-            return Vector3.zero;
+        if (dragging) return Vector2.zero;
 
-        Vector3 mousePos = Input.mousePosition;
-        float horizontal = 0f;
-        float vertical = 0f;
+        Vector2 m = Mouse.current.position.ReadValue();
+        float x = 0f, z = 0f;
 
-        if (mousePos.x <= edgeZonePixels)
-            horizontal -= 1f;
-        else if (mousePos.x >= Screen.width - edgeZonePixels)
-            horizontal += 1f;
+        if (m.x <= edgePixels) x -= 1f;
+        else if (m.x >= Screen.width - edgePixels) x += 1f;
 
-        if (mousePos.y <= edgeZonePixels)
-            vertical -= 1f;
-        else if (mousePos.y >= Screen.height - edgeZonePixels)
-            vertical += 1f;
+        if (m.y <= edgePixels) z -= 1f;
+        else if (m.y >= Screen.height - edgePixels) z += 1f;
 
-        Vector2 direction = new Vector2(horizontal, vertical).normalized;
-        return direction * (moveSpeed * edgePanSpeedMultiplier * Time.deltaTime);
+        return new Vector2(x, z).normalized * (edgeSpeed * Time.deltaTime);
     }
 
-    private Vector2 GetMouseDragDelta()
+    // Зажатая средняя кнопка мыши
+    Vector2 DragDelta()
     {
-        if (!enableMouseDragPanning)
-            return Vector2.zero;
-
-        // Средняя кнопка мыши — это button 2 (колесо).
-        if (Input.GetMouseButtonDown(2))
+        if (!Mouse.current.middleButton.isPressed)
         {
-            _isDragging = true;
-            _lastMouseScreenPosition = Input.mousePosition;
+            dragging = false;
             return Vector2.zero;
         }
 
-        if (Input.GetMouseButtonUp(2))
+        Vector2 m = Mouse.current.position.ReadValue();
+
+        if (!dragging)
         {
-            _isDragging = false;
+            dragging = true;
+            lastMousePos = m;
             return Vector2.zero;
         }
 
-        if (!_isDragging || !Input.GetMouseButton(2))
-        {
-            _isDragging = false;
-            return Vector2.zero;
-        }
+        Vector2 screenDelta = m - lastMousePos;
+        lastMousePos = m;
 
-        Vector3 currentMouseScreenPosition = Input.mousePosition;
-        Vector3 screenDelta = currentMouseScreenPosition - _lastMouseScreenPosition;
-        _lastMouseScreenPosition = currentMouseScreenPosition;
+        // Пиксели -> мировые юниты (для ортографической камеры)
+        float unitsPerPixel = cam.orthographic
+            ? 2f * cam.orthographicSize / Screen.height
+            : 2f * Mathf.Tan(cam.fieldOfView * 0.5f * Mathf.Deg2Rad) * tr.position.y / Screen.height;
 
-        // Двигаем камеру в направлении, противоположном движению мыши,
-        // чтобы эффект был похож на «хватание мира».
-        float worldUnitsPerPixel = GetWorldUnitsPerPixel();
-        Vector2 worldDelta = new Vector2(-screenDelta.x, -screenDelta.y) * worldUnitsPerPixel;
-        return worldDelta;
-    }
-
-    private float GetWorldUnitsPerPixel()
-    {
-        var cam = GetComponent<Camera>();
-
-        if (cam != null && cam.orthographic && Screen.height > 0)
-        {
-            return (2f * cam.orthographicSize) / Screen.height;
-        }
-
-        float halfHeightAtDepth = Mathf.Tan(cam != null ? cam.fieldOfView * 0.5f * Mathf.Deg2Rad : 30f * Mathf.Deg2Rad)
-                                  * Mathf.Abs(_fixedZ);
-        return (2f * halfHeightAtDepth) / Screen.height;
-    }
-
-    private Vector3 ClampToAllowedBounds(Vector3 position)
-    {
-        position.x = Mathf.Clamp(position.x, minBounds.x, maxBounds.x);
-        position.y = Mathf.Clamp(position.y, minBounds.y, maxBounds.y);
-        return position;
-    }
-
-    private void OnValidate()
-    {
-        edgeZonePixels = Mathf.Max(1, edgeZonePixels);
-        moveSpeed = Mathf.Max(0f, moveSpeed);
-        edgePanSpeedMultiplier = Mathf.Max(0f, edgePanSpeedMultiplier);
-
-        Vector2 lo = new Vector2(Mathf.Min(minBounds.x, maxBounds.x), Mathf.Min(minBounds.y, maxBounds.y));
-        Vector2 hi = new Vector2(Mathf.Max(minBounds.x, maxBounds.x), Mathf.Max(minBounds.y, maxBounds.y));
-        minBounds = lo;
-        maxBounds = hi;
+        return new Vector2(-screenDelta.x, -screenDelta.y) * unitsPerPixel;
     }
 }

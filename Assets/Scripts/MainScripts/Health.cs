@@ -25,4 +25,10 @@ public class Health : MonoBehaviour
             }
         }
     }
+
+    void Awake()
+    {
+        if (GetComponent<HealthBar>() == null)
+            gameObject.AddComponent<HealthBar>();
+    }
 }
