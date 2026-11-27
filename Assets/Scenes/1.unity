@@ -269,9 +269,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a5cd66965bfe984c869cef3c5b61979, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraMover
-  keySpeed: 10
-  edgeSpeed: 0
-  edgePixels: 15
+  moveSpeed: 20
+  dragSensitivity: 0.5
+  edgeThreshold: 20
+  ignoreEdgeWhenDragging: 1
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -6261,6 +6262,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a07319c26a27cfd479476dbcd9663479, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1414466218}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a07319c26a27cfd479476dbcd9663479, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1414466225}
   m_SourcePrefab: {fileID: 100100000, guid: a07319c26a27cfd479476dbcd9663479, type: 3}
 --- !u!1 &1414466217 stripped
 GameObject:
@@ -6398,6 +6402,27 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &1414466225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414466217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aea097c956515b54a80ec1a91aa05580, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Attack_Warrior
+  comboSteps: []
+  comboResetWindow: 1.5
+  globalCooldown: 1
+  speedMultiplierDuringCast: 0.5
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 64
+  effectColor: {r: 1, g: 0.6, b: 0, a: 0.35}
+  visualMaterial: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
